@@ -4,6 +4,7 @@
 #include "string.hpp"
 #include <string>
 #include <iostream>
+#include <functional>
 namespace tf
 {
 /**************************************************************************/

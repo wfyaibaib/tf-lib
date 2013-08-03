@@ -76,7 +76,7 @@ namespace tf {
         while (c != head_end)
         {
             p = c;
-            if (cmp(inserted, value(p)))
+            if (cmp(inserted, p->v))
                 c = left(p);
             else
                 c = right(p);

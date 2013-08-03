@@ -1,10 +1,10 @@
 #include <iostream>
 #include "rbtree.hpp"
-
+#include "avltree.hpp"
 int main()
 {
-    tf::rbtree<int> tree;
-    const int N = 7;
+    tf::avltree<int> tree;
+    const int N = 10;
     for (int i = 0; i < N; i++)
     {
         tree.insertOneNode(i);
@@ -13,13 +13,13 @@ int main()
         tree.treeShap(tree.root());
     }
 
-    for (int i = 0; i < N; i++)
-    {
-        std::cout << "-----------------------------------------" << std::endl;
-        std::cout << "delete root node: cnt = " << i << std::endl;
-        tree.deleteOneNode(tree.root());
-        tree.treeShap(tree.root());
-    }
+//    for (int i = 0; i < N; i++)
+//    {
+//        std::cout << "-----------------------------------------" << std::endl;
+//        std::cout << "delete root node: cnt = " << i << std::endl;
+//        tree.deleteOneNode(tree.root());
+//        tree.treeShap(tree.root());
+//    }
 
     //tree.leftRotation(tree.root());
     //tree.leftRotation(tree.root());
