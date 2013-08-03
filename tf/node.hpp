@@ -57,6 +57,14 @@ namespace tf {
         return newNode;
     }
 
+    template <class DLinkNode>
+    void bstDeleteNodeRecusive(DLinkNode* root, DLinkNode* head_end)
+    {
+        if (left(root) != head_end) bstDeleteNodeRecusive(left(root), head_end);
+        if (right(root) != head_end) bstDeleteNodeRecusive(right(root), head_end);
+        delete root;
+    }
+
     template <class DLinkNode, class Value, class Cmp>
     DLinkNode* bstFindInsertPosition(DLinkNode* pstart,
         DLinkNode* head_end,

@@ -79,6 +79,11 @@ public:
 
         cnt = 0;
     }
+    ~rbtree()
+    {
+        if (!empty()) bstDeleteNodeRecusive(head->p, head);
+        delete head;
+    }
 
 
     link_t findInsertPosition(const Value& value) const
