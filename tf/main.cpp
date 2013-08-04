@@ -13,13 +13,13 @@ int main()
         tree.treeShap(tree.root());
     }
 
-//    for (int i = 0; i < N; i++)
-//    {
-//        std::cout << "-----------------------------------------" << std::endl;
-//        std::cout << "delete root node: cnt = " << i << std::endl;
-//        tree.deleteOneNode(tree.root());
-//        tree.treeShap(tree.root());
-//    }
+    for (int i = 0; i < N; i++)
+    {
+        std::cout << "-----------------------------------------" << std::endl;
+        std::cout << "delete root node: cnt = " << i << std::endl;
+        tree.deleteOneNode(tree.root());
+        tree.treeShap(tree.root());
+    }
 
     //tree.leftRotation(tree.root());
     //tree.leftRotation(tree.root());

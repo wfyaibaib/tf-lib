@@ -114,7 +114,7 @@ namespace tf {
     }
 
     template <class TLinkNode>
-    void bstLeftRotation(TLinkNode* n, TLinkNode* head_end = 0)// head:root's parent, all null point to it
+    void bstLeftRotation(TLinkNode* n, TLinkNode* head_end)// head:root's parent, all null point to it
     {
         TLinkNode* p = parent(n);
         TLinkNode* r = right(n);
@@ -135,7 +135,7 @@ namespace tf {
     }
 
     template <class TLinkNode>
-    void bstRightRotation(TLinkNode* n, TLinkNode* head_end = 0)
+    void bstRightRotation(TLinkNode* n, TLinkNode* head_end)
     {
         TLinkNode* p = parent(n);
         TLinkNode* l = left(n);

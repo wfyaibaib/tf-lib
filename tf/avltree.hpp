@@ -232,7 +232,7 @@ public:
             treeShap(left(subtree), table_cnt + 1);
         }
     }
-/*
+
     void deleteOneNode(link_t del)
     {
         link_t d = del;
@@ -251,126 +251,129 @@ public:
         else p->p = n;
         if (n != head) n->p = p;
 
-
-        bool dc = d->c;
         cnt--;
         delete d;
+        //treeShap(root());
 
-        if (dc == true) deleteAdjust(n, p);
-
-
+        deleteAdjust(p, n);
     }
-    void deleteAdjust(link_t n, link_t np)// n subtree decrease one black
+    void deleteAdjust(link_t adjustNode, link_t childChanged)// childChanged subtree decrease height
     {
-        if (cnt == 0) return;// delete only one node : root
-        else
-        {
-            if (n->c == false)// replaced node is red
+  //      std::cout << "deleteAdjust: " << adjustNode->v << '\t' << childChanged->v << std::endl;
+
+            while (adjustNode != head)// childChanged's height decrease
             {
-                n->c = true;
-                return;
-            }
-            else// replaced node is bottom black head
-            {// uncle subtree has a black node
-                while (1)
+                int lh, rh;
+                if (childChanged == left(adjustNode))// delete left
                 {
-                    if (n == root())
+       //             std::cout << "delete left " << std::endl;
+                    lh = height(childChanged);
+                    rh = height(right(adjustNode));
+       //             std::cout << "< " << lh << ", " << rh << ">" << std::endl;
+                    if (lh + 1 == rh) return;// old lh = old rh
+                    else if (lh == rh)// old lh > old rh
                     {
-                        //std::cout << "case del root" << std::endl;
-                        if (n->c == false)
-                            n->c = true;
-                        return;
+
+                        --(adjustNode->h);
+                        childChanged = adjustNode;
+                        adjustNode = parent(adjustNode);
+
                     }
-                    link_t p =  n == head ? np : parent(n);
-                    link_t s = n == left(p) ? right(p) : left(p);
-                    link_t sl = left(s);
-                    link_t sr = right(s);
-                    int state = 8*p->c + 4*s->c + 2*sl->c + sr->c;
-                    switch(state)
+                    else//(lh + 1 < rh) old lh < old rh
                     {
-                    case 11://1011:wiki-case 2:clrs-case 1
-                        if (n == left(p))
+                        link_t r = right(adjustNode);
+                        link_t rl = left(r);
+                        link_t rr = right(r);
+                        if (rr == head)// (rl != head)(rr == head)
                         {
-                        //std::cout << "n is left child,case 1011" << std::endl;
-                              leftRotation(p);
-                              s->c = true;
-                              sl->c = false;
+ //                           std::cout << "rr == head" << std::endl;
+                            bstRightRotation(r, head);
+                            bstLeftRotation(adjustNode, head);
+
+                            adjustNode->h = adjustNode->h - 2;
+                            --(r->h);
+                            ++(rl->h);
+
+                            childChanged = rl;
+                            adjustNode = parent(childChanged);
                         }
-                        else
+                        else // (rr != head)(rl unknown)
                         {
-                        //std::cout << "n is right child,case 1011" << std::endl;
-                            rightRotation(p);
-                            s->c = true;
-                            sr->c = false;
-                        }
-                        return;
-                    case 15://1111 wiki-case 3, clrs-case 2(1)
-                        //std::cout << "case 1111" << std::endl;
-                        s->c = false;
-                        n = p;
-                        continue;
-                    case 7://0111 wiki-case 4, clrs-case 2(2)
-                        //std::cout << "case 0111" << std::endl;
-                        p->c = true;
-                        s->c = false;
-                        return;
-                    default:
-                        // wiki-case 5, clrs-case 4
-                        if (left(p) == n)
-                        {
-                            switch (state)
+      //                      std::cout << "rr != head" << std::endl;
+                            bstLeftRotation(adjustNode, head);
+                            if (rl != head)
                             {
-                            case 5:// *101
-                            case 13:
-                        //std::cout << "n is left child,case *101" << std::endl;
-                                rightRotation(s);
-                                leftRotation(p);
-                                sl->c = p->c;
-                                p->c = true;
-                                return;
-                            case 4:// *1*0
-                            case 6:
-                            case 12://
-                            case 14:
-                        //std::cout << "n is left child,case *1*0" << std::endl;
-                                leftRotation(p);
-                                s->c = p->c;
-                                p->c = true;
-                                sr->c = true;
-                                return;
+                                --(adjustNode->h);
+                                ++(r->h);
+
                             }
-                        }
-                        else
-                        {
-                            switch (state)
+                            else
                             {
-                            case 6://0110
-                            case 14://1110
-                        //std::cout << "n is right child,case *110" << std::endl;
-                                leftRotation(s);
-                                rightRotation(p);
-                                sr->c = p->c;
-                                p->c = true;
-                                return;
-                            case 4:// *10*
-                            case 5:
-                            case 12:
-                            case 13:
-                        //std::cout << "n is right child,case *10*" << std::endl;
-                                rightRotation(p);
-                                s->c = p->c;
-                                p->c = true;
-                                sl->c = true;
-                                return;
+                                adjustNode->h = adjustNode->h - 2;
                             }
+                            childChanged = r;
+                            adjustNode = parent(childChanged);
                         }
                     }
                 }
-            }
+                else// right
+                {
+  //                  std::cout << "delete right " << std::endl;
 
-        }
+                    rh = height(childChanged);
+                    lh = height(left(adjustNode));
+
+  //                  std::cout << "< " << lh << ", " << rh << ">" << std::endl;
+
+                    if (rh + 1 == lh) return;// old rh = old lh
+                    else if (rh == lh)// old lh < old rh
+                    {
+                        --(adjustNode->h);
+                        childChanged = adjustNode;
+                        adjustNode = parent(adjustNode);
+
+                    }
+                    else//(rh + 1 < lh) old lh > old rh
+                    {
+                        link_t l = left(adjustNode);
+                        link_t ll = left(l);
+                        link_t lr = right(l);
+                        if (ll == head)// (lr != head)(ll == head)
+                        {
+   //                         std::cout << "ll == head" << std::endl;
+                            bstLeftRotation(l, head);
+                            bstRightRotation(adjustNode, head);
+
+                            adjustNode->h = adjustNode->h - 2;
+                            --(l->h);
+                            ++(lr->h);
+
+                            childChanged = lr;
+                            adjustNode = parent(childChanged);
+                        }
+                        else // (ll != head)(lr unknown)
+                        {
+   //                         std::cout << "ll != head" << std::endl;
+                            bstRightRotation(adjustNode, head);
+                            if (lr != head)
+                            {
+                                --(adjustNode->h);
+                                ++(l->h);
+
+                            }
+                            else
+                            {
+                                adjustNode->h = adjustNode->h - 2;
+                            }
+                            childChanged = l;
+                            adjustNode = parent(childChanged);
+                        }
+                    }
+
+                }
+            }
     }
-    */
+
     link_t next(link_t pnode)
     {
         if (right(pnode) != head) return leftmost(right(pnode));
