@@ -10,5 +10,6 @@ HEADERS += \
     rbtree.hpp \
     string.hpp \
     avltree.hpp \
-    splaytree.hpp
+    splaytree.hpp \
+    generator.hpp
 

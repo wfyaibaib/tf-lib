@@ -5,11 +5,11 @@
 
 int main()
 {
-    tf::avltree<int> tree;
+    tf::avltree<float> tree;
     const int N = 10;
     for (int i = 0; i < N; i++)
     {
-        tree.insertOneNode(i);
+        tree.insertOneNode(i + 0.1);
         std::cout << "-----------------------------------------" << std::endl;
         std::cout << "add\t" << i << std::endl;
 //        tree.treeShap(tree.root());
