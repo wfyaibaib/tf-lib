@@ -25,9 +25,6 @@ struct rbnode : public rbnode_base<rbnode<Value> >
     Value v;
     rbnode(const Value& value = Value()) : v(value) {}
 };
-template <class RB_Node>
-typename RB_Node::value_type value(RB_Node *p) {return p->v;}
-
 
 /**************************************************************************/
 

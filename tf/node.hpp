@@ -262,5 +262,11 @@ else
         return;
     }
 }
+/**************************************************************************/
+template <class HasValueNode>
+typename HasValueNode::value_type value(HasValueNode* pnode)
+{
+    return pnode->v;
+}
 
 #endif // NODE_HPP
