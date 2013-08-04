@@ -19,11 +19,14 @@ template <class RB_Node_Base>
 bool color(RB_Node_Base *p) {return p->c;}
 
 template <class Value>
-struct rbnode : public rbnode_base<rbnode<Value> >
+struct rbnode : public rbnode_base<rbnode<Value> >,
+                public has_value<Value>
 {
-    typedef Value value_type;
-    Value v;
-    rbnode(const Value& value = Value()) : v(value) {}
+    rbnode(const Value& value = Value()) : has_value<Value>(value) {}
+    std::string valueToString()
+    {
+        return "(" + to_string(this->v) + ", " + (this->c ? "b" : "r") +")";
+    }
 };
 
 /**************************************************************************/

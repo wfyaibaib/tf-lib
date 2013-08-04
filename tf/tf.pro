@@ -9,5 +9,6 @@ HEADERS += \
     node.hpp \
     rbtree.hpp \
     string.hpp \
-    avltree.hpp
+    avltree.hpp \
+    splaytree.hpp
 

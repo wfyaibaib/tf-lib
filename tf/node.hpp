@@ -1,5 +1,8 @@
 #ifndef NODE_HPP
 #define NODE_HPP
+#include <string>
+#include <string.hpp>
+#include <iostream>
 namespace tf {
 /**************************************************************************/
 
@@ -63,6 +66,17 @@ namespace tf {
         if (left(root) != head_end) bstDeleteNodeRecusive(left(root), head_end);
         if (right(root) != head_end) bstDeleteNodeRecusive(right(root), head_end);
         delete root;
+    }
+    template <class DLinkNode>
+    void bstDisplayNodeRecusive(DLinkNode* root, DLinkNode* head_end, size_t table_cnt = 0)
+    {
+        if (root == head_end) std::cout << std::string(table_cnt, '\t') << "[None]" << std::endl;
+        else
+        {
+            bstDisplayNodeRecusive(right(root), head_end, table_cnt + 1);
+            std::cout << std::string(table_cnt, '\t') << root->valueToString() << std::endl;
+            bstDisplayNodeRecusive(left(root), head_end, table_cnt + 1);
+        }
     }
 
     template <class DLinkNode, class Value, class Cmp>
@@ -261,12 +275,27 @@ else
         delete d;
         return;
     }
+    /**************************************************************************/
+    template <class Value>
+    struct has_value
+    {
+        typedef Value value_type;
+
+        Value v;
+
+        has_value(const Value& value = Value()):v(value) {}
+        virtual std::string valueToString()
+        {
+            return to_string(v);
+        }
+    };
+
+    template <class HasValue>
+    typename HasValue::value_type value(HasValue* pnode)
+    {
+        return pnode->v;
+    }
 }
-/**************************************************************************/
-template <class HasValueNode>
-typename HasValueNode::value_type value(HasValueNode* pnode)
-{
-    return pnode->v;
-}
+
 
 #endif // NODE_HPP

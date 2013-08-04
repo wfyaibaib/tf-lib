@@ -13,7 +13,7 @@ std::string to_string(const T& t)
     return stream.str();
 }
 template <class Re>
-Re stringTo(string str)
+Re stringTo(std::string str)
 {
 
     std::istringstream in(str);
@@ -21,7 +21,7 @@ Re stringTo(string str)
     in >> re;
     return re;
 }
-inline string upperCase(const string& s)
+inline std::string upperCase(const std::string& s)
 {
 
     std::string upper(s);
@@ -30,7 +30,7 @@ inline string upperCase(const string& s)
     return upper;
 }
 
-inline string lowerCase(const string& s)
+inline std::string lowerCase(const std::string& s)
 {
 
     std::string lower(s);

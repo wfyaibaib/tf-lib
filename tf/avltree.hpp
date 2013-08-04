@@ -18,11 +18,14 @@ struct avlnode_base : public tlink<Node>
     avlnode_base():h(1){}
 };
 template <class Value>
-struct avlnode : public avlnode_base<avlnode<Value> >
+struct avlnode : public avlnode_base<avlnode<Value> > ,
+                 public has_value<Value>
 {
-    typedef Value value_type;
-    Value v;
-    avlnode(const Value& value = Value()) : v(value) {}
+    avlnode(const Value& value = Value()) : has_value<Value>(value) {}
+    std::string valueToString()
+    {
+        return "(" + to_string(this->v) + ", " + to_string(this->h) + ")";
+    }
 };
 template <class AVL_Node_Base>
 int height(AVL_Node_Base* p) {return p->h;}

@@ -1,0 +1,10 @@
+#ifndef SPLAYTREE_H
+#define SPLAYTREE_H
+template <class Value>
+struct splaynode
+{
+    t
+
+};
+
+#endif // SPLAYTREE_H
