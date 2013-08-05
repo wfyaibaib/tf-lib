@@ -1,7 +1,9 @@
 #ifndef AVLTREE_HPP
 #define AVLTREE_HPP
 
-#include <node.hpp>
+
+#include <bst.hpp>
+
 #include <string>
 #include "string.hpp"
 #include <functional>
@@ -31,8 +33,15 @@ template <class AVL_Node_Base>
 int height(AVL_Node_Base* p) {return p->h;}
 /**************************************************************************/
 template <class Value, class Cmp = std::less<Value> >
-class avltree
+class avltree : public bst_base<avlnode<Value>, Cmp>
 {
+    /*
+    bst_base<avlnode<Value>, Cmp>:
+        countable:
+             size_t cnt;
+        link_t head;            // alvnode<Value>*
+        Cmp cmp;
+    */
 public:
     typedef avlnode<Value> node_t;
     typedef avlnode<Value>* link_t;
@@ -57,31 +66,14 @@ public:
             );
     }
 
-    link_t leftmost(link_t pnode) { return leftMost(pnode, head); }
-    link_t rightmost(link_t pnode) { return rightMost(pnode, head); }
-    void leftRotation(link_t n) { bstLeftRotation(n, head); }
-    void rightRotation(link_t n) { bstRightRotation(n, head); }
-    bool isRoot(link_t pnode) { return parent(pnode) == head; }
-    bool empty() { return cnt == 0; }
-    link_t root() { return parent(head); }
-    link_t getNewNodeAsLeaf(const Value& value) { return bstGetNewNodeAsLeaf(value, head); }
-
-    std::string display() { return display_recusive(root()); }
-
-
-    link_t head;
-    Cmp cmp;
-    size_t cnt;
 
     avltree()
     {
-        cmp = Cmp();
-
         head = new node_t();
         head->p = head->l = head->r = head;
         head->h = 0;
 
-        cnt = 0;
+
     }
     ~avltree()
     {

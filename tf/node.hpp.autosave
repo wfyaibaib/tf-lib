@@ -235,7 +235,7 @@ namespace tf {
                 newnode->p = p;
                 if (cmp(inserted, value(p)))
                     p->l = newnode;
-else
+                else
                     p->r = newnode;
                 //                 cnt++;
                 //                 insertAdjust(newnode);

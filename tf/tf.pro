@@ -11,5 +11,8 @@ HEADERS += \
     string.hpp \
     avltree.hpp \
     splaytree.hpp \
-    generator.hpp
+    generator.hpp \
+    countable.hpp \
+    hasvalue.hpp \
+    bst.hpp
 

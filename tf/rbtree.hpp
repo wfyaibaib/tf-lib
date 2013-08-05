@@ -54,8 +54,8 @@ public:
             );
     }
 
-    link_t leftmost(link_t pnode) { return leftMost(pnode, head); }
-    link_t rightmost(link_t pnode) { return rightMost(pnode, head); }
+    link_t leftmost(link_t pnode) { return bstLeftMost(pnode, head); }
+    link_t rightmost(link_t pnode) { return bstRightMost(pnode, head); }
     void leftRotation(link_t n) { bstLeftRotation(n, head); }
     void rightRotation(link_t n) { bstRightRotation(n, head); }
     bool isRoot(link_t pnode) { return parent(pnode) == head; }
