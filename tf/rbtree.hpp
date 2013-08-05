@@ -1,10 +1,11 @@
 #ifndef RBTREE_HPP
 #define RBTREE_HPP
-#include "node.hpp"
+#include "bst.hpp"
 #include "string.hpp"
 #include <string>
 #include <iostream>
 #include <functional>
+#include "hasvalue.hpp"
 namespace tf
 {
 /**************************************************************************/
@@ -13,7 +14,7 @@ template <class Node>
 struct rbnode_base : public tlink<Node>
 {
     bool c;// 0:red,1:black
-    rbnode_base():c(false){}
+    rbnode_base():c(false){}// red node
 };
 template <class RB_Node_Base>
 bool color(RB_Node_Base *p) {return p->c;}
@@ -32,82 +33,31 @@ struct rbnode : public rbnode_base<rbnode<Value> >,
 /**************************************************************************/
 
 template <class Value, class Cmp = std::less<Value> >
-class rbtree
+class rbtree : public bst_base<rbnode<Value>, Cmp >
 {
 public:
 //  typedef rbnode<Value> rbnode; g++4.6 not support
     typedef rbnode<Value>   node_t;
     typedef rbnode<Value>* link_t;
 // g++4.6 not support std::to_string<>
-    std::string display_recusive(link_t root)
-    {
-        if (root == head) return "[None]";
-        else return
-            (
-            "[" +
-            display_recusive(root->l) +
-            " (" +
-            to_string(root->v) + ", " + (root->c ? "b" : "r") +
-            ") " +
-            display_recusive(root->r) +
-            "]"
-            );
-    }
-
-    link_t leftmost(link_t pnode) { return bstLeftMost(pnode, head); }
-    link_t rightmost(link_t pnode) { return bstRightMost(pnode, head); }
-    void leftRotation(link_t n) { bstLeftRotation(n, head); }
-    void rightRotation(link_t n) { bstRightRotation(n, head); }
-    bool isRoot(link_t pnode) { return parent(pnode) == head; }
-    bool empty() { return cnt == 0; }
-    link_t root() { return parent(head); }
-    link_t getNewNodeAsLeaf(const Value& value) { return bstGetNewNodeAsLeaf(value, head); }
-
-    std::string display() { return display_recusive(root()); }
-
-
-    link_t head;
-    Cmp cmp;
-    size_t cnt;
 
     rbtree()
     {
-        cmp = Cmp();
-
-        head = new node_t();
-        head->p = head->l = head->r = head;
-        head->c = true;
-
-        cnt = 0;
-    }
-    ~rbtree()
-    {
-        if (!empty()) bstDeleteNodeRecusive(head->p, head);
-        delete head;
+        this->head->p = this->head->l = this->head->r = this->head;
+        this->head->c = true;// this->head is black
     }
 
-
-    link_t findInsertPosition(const Value& value) const
-    {
-        return bstFindInsertPosition(head->p, head, value, cmp);
-    }
-    /**
-     * @brief insertOneNode :
-     * @param value : the value to be insert
-     * @param unique
-     * @return
-     */
     link_t insertOneNode(const Value& value, bool unique = false)
     {
         // find new node's parent
         link_t p = findInsertPosition(value);
-        if (p == head)
+        if (p == this->head)
         {// insert as root
             // new node will be leaf node
             link_t newnode = getNewNodeAsLeaf(value);
-            head->p = newnode;
-            newnode->p = head;
-            cnt++;
+            this->head->p = newnode;
+            newnode->p = this->head;
+            this->increaseCnt();
             insertAdjust(newnode);
             return newnode;
         }
@@ -122,19 +72,15 @@ public:
                     p->l = newnode;
                 else
                     p->r = newnode;
-                cnt++;
+                this->increaseCnt();
                 insertAdjust(newnode);
                 return newnode;
             }
         }
     }
-    /**
-     * @brief insertAdjust
-     * @param newnode
-     */
     void insertAdjust(link_t newnode)
     {
-        if (newnode->p == head)
+        if (newnode->p == this->head)
         {
             newnode->c = true;// black
             return;
@@ -193,39 +139,28 @@ public:
 
         }
     }
-    void treeShap(link_t subtree ,size_t table_cnt = 0)
-    {
-        if (subtree == head) std::cout << std::string(table_cnt, '\t') << "[None]" << std::endl;
-        else
-        {
-
-            treeShap(right(subtree), table_cnt + 1);
-            std::cout << std::string(table_cnt, '\t') + "(" + to_string(subtree->v) + ", " + (subtree->c ? "b":"r") + ")" << std::endl;
-            treeShap(left(subtree), table_cnt + 1);
-        }
-    }
 
     void deleteOneNode(link_t del)
     {
         link_t d = del;
-        if (del->l != head && del->r != head)//
+        if (del->l != this->head && del->r != this->head)//
         {
             d = next(del);
             del->v = d->v;// copy data from next
         }
-        // if left(del) && right(del) then left(d)==head , right(d) == red/head
+        // if left(del) && right(del) then left(d)==this->head , right(d) == red/this->head
         // if left(del)
 
-        link_t n = right(d) == head ? left(d) : right(d);//
+        link_t n = right(d) == this->head ? left(d) : right(d);//
         link_t p = parent(d);
         if (d == left(p)) p->l = n;
         else if (d == right(p)) p->r = n;
         else p->p = n;
-        if (n != head) n->p = p;
+        if (n != this->head) n->p = p;
 
 
         bool dc = d->c;
-        cnt--;
+        this->decreaseCnt();
         delete d;
 
         if (dc == true) deleteAdjust(n, p);
@@ -234,7 +169,7 @@ public:
     }
     void deleteAdjust(link_t n, link_t np)// n subtree decrease one black
     {
-        if (cnt == 0) return;// delete only one node : root
+        if (this->empty()) return;// delete only one node : root
         else
         {
             if (n->c == false)// replaced node is red
@@ -242,18 +177,18 @@ public:
                 n->c = true;
                 return;
             }
-            else// replaced node is bottom black head
+            else// replaced node is bottom black this->head
             {// uncle subtree has a black node
                 while (1)
                 {
-                    if (n == root())
+                    if (n == this->root())
                     {
                         //std::cout << "case del root" << std::endl;
                         if (n->c == false)
                             n->c = true;
                         return;
                     }
-                    link_t p =  n == head ? np : parent(n);
+                    link_t p =  n == this->head ? np : parent(n);
                     link_t s = n == left(p) ? right(p) : left(p);
                     link_t sl = left(s);
                     link_t sr = right(s);
@@ -341,47 +276,6 @@ public:
             }
 
         }
-    }
-    link_t next(link_t pnode)
-    {
-        if (right(pnode) != head) return leftmost(right(pnode));
-        else
-        {
-            link_t c = pnode;
-            link_t p = parent(c);
-            while (c == right(p))
-            {
-                c = p;
-                p = parent(p);
-            }
-            return p;// return head if pnode is max one
-        }
-    }
-    link_t prev(link_t pnode)
-    {
-        if (left(pnode) != head) return rightmost(left(pnode));
-        else
-        {
-            link_t c = pnode;
-            link_t p = parent(c);
-            while (c == left(p))
-            {
-                c = p;
-                p = parent(p);
-            }
-            return p;// return head if pnode is min one
-        }
-
-    }
-    link_t minimum()
-    {
-        if (!empty()) return leftmost(root());
-        else return head;
-    }
-    link_t maximum()
-    {
-        if (!empty()) return rightmost(root());
-        else return head;
     }
 
 };

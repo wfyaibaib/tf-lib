@@ -2,10 +2,11 @@
 #include "rbtree.hpp"
 #include "avltree.hpp"
 #include "splaytree.hpp"
+#include "bst.hpp"
 
 int main()
 {
-    tf::avltree<float> tree;
+    tf::splaytree<float> tree;
     const int N = 10;
     for (int i = 0; i < N; i++)
     {
@@ -13,7 +14,10 @@ int main()
         std::cout << "-----------------------------------------" << std::endl;
         std::cout << "add\t" << i << std::endl;
 //        tree.treeShap(tree.root());
-        bstDisplayNodeRecusive(tree.root(), tree.head);
+        tree.treeShap();
+    //    std::cout << tree.nodeToStringRecusive(tree.root());
+        std::cout << std::endl;
+    //    bstDisplayNodeRecusive(tree.root(), tree.head);
     }
 
 //    for (int i = 0; i < N; i++)

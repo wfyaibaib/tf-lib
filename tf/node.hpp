@@ -12,7 +12,6 @@ namespace tf {
         Node *r;
         slink():r(0){}
     };
-    template <class Node>
 // right
     template <class SLinkNode>
     SLinkNode* right(SLinkNode* p) {return p->r;}
@@ -171,7 +170,8 @@ namespace tf {
         else if (n == left(p)) p->l = l;
         else p->r = l;
     }
-// successor
+// successor:
+            //
     template <class TLinkNode>
     TLinkNode* bstSuccessor(TLinkNode* pnode, TLinkNode* end_head)
     {
@@ -235,7 +235,7 @@ namespace tf {
                 newnode->p = p;
                 if (cmp(inserted, value(p)))
                     p->l = newnode;
-else
+                else
                     p->r = newnode;
                 //                 cnt++;
                 //                 insertAdjust(newnode);

@@ -3,12 +3,14 @@
 
 #include "node.hpp"
 #include "countable.hpp"
+#include "hasvalue.hpp"
+#include <functional>
 
 namespace tf
 {
 // bst_base
 template <class TLinkNode,
-          class Cmp = std::less<typename TlinkNode::value_type> >
+          class Cmp = std::less<typename TLinkNode::value_type> >
 struct bst_base : public countable
 {
     typedef TLinkNode  node_t;
@@ -23,16 +25,17 @@ struct bst_base : public countable
     Cmp cmp;
 /**************************************************************************/
 
-    bst_base(Cmp cmp_ = std::less<typename TlinkNode::value_type> >):
+    bst_base(Cmp cmp_ = std::less<Value>()) :
                  countable(0),
                  head(new TLinkNode()),
                  cmp(cmp_)
     {}
     ~bst_base()
     {
-        bstDeleteNodeRecusive(head, head);
+        if (!empty())   bstDeleteNodeRecusive(root(), head);
+        delete head;
     }
-
+/**************************************************************************/
     link_t leftMost(link_t pnode = root()) { return bstLeftMost(pnode, head); }
     link_t rightMost(link_t pnode = root()) { return bstRightMost(pnode, head); }
     void leftRotation(link_t n) { bstLeftRotation(n, head); }
@@ -41,8 +44,58 @@ struct bst_base : public countable
     bool empty() const{ return size() == 0; }
     link_t root() { return parent(head); }
     link_t getNewNodeAsLeaf(const Value& value) { return bstGetNewNodeAsLeaf(value, head); }
+ /**************************************************************************/
+    void nodeShapRecusive(link_t subtree ,size_t table_cnt = 0)
+    {
+        std::string delimiter = std::string(table_cnt, '\t');
+        if (subtree == head) std::cout << delimiter << "[None]" << std::endl;
+        else
+        {
+            nodeShapRecusive(right(subtree), table_cnt + 1);
+            std::cout << delimiter + subtree->valueToString() << std::endl;
+            nodeShapRecusive(left(subtree), table_cnt + 1);
+        }
+    }
+    void treeShap()
+    {
+        nodeShapRecusive(root());
+    }
+
+    std::string nodeToStringRecusive(link_t root)
+    {
+        if (root == this->head) return "[None]";
+        else return
+            (
+            "[" +
+            nodeToStringRecusive(root->l) +
+            " (" +
+            root->valueToString() + // has_value
+            ") " +
+            nodeToStringRecusive(root->r) +
+            "]"
+            );
+    }
 /**************************************************************************/
-    link_t findInsertPosition(const Value& value) const
+    link_t next(link_t pnode)
+    {
+        return bstSuccessor(pnode, head);
+    }
+    link_t prev(link_t pnode)
+    {
+        return bstPredecessor(pnode, head);
+    }
+    link_t minimum()
+    {
+        if (!empty()) return leftMost(root());
+        else return head;
+    }
+    link_t maximum()
+    {
+        if (!empty()) return rightMost(root());
+        else return head;
+    }
+/**************************************************************************/
+    link_t findInsertPosition(const Value& value)
     {
         return bstFindInsertPosition(root(), head, value, cmp);
     }
@@ -101,7 +154,6 @@ struct bst_base : public countable
 
         delete d;
     }
-/**************************************************************************/
 
 };
 

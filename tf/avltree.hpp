@@ -1,8 +1,7 @@
 #ifndef AVLTREE_HPP
 #define AVLTREE_HPP
 
-
-#include <bst.hpp>
+#include "bst.hpp"
 
 #include <string>
 #include "string.hpp"
@@ -24,7 +23,7 @@ struct avlnode : public avlnode_base<avlnode<Value> > ,
                  public has_value<Value>
 {
     avlnode(const Value& value = Value()) : has_value<Value>(value) {}
-    std::string valueToString()
+    std::string valueToString() // implement
     {
         return "(" + to_string(this->v) + ", " + to_string(this->h) + ")";
     }
@@ -39,71 +38,32 @@ class avltree : public bst_base<avlnode<Value>, Cmp>
     bst_base<avlnode<Value>, Cmp>:
         countable:
              size_t cnt;
-        link_t head;            // alvnode<Value>*
+        link_t this->head;            // alvnode<Value>*
         Cmp cmp;
     */
+
 public:
     typedef avlnode<Value> node_t;
     typedef avlnode<Value>* link_t;
 
-    int factor(link_t pnode)
-    {
-        return height(left(pnode)) - height(right(pnode));
-    }
-
-    std::string display_recusive(link_t root)
-    {
-        if (root == head) return "[None]";
-        else return
-            (
-            "[" +
-            display_recusive(root->l) +
-            " (" +
-            to_string(root->v) + ", " + to_string(root->h) +
-            ") " +
-            display_recusive(root->r) +
-            "]"
-            );
-    }
-
-
     avltree()
-    {
-        head = new node_t();
-        head->p = head->l = head->r = head;
-        head->h = 0;
-
-
-    }
-    ~avltree()
-    {
-        if (!empty()) bstDeleteNodeRecusive(head->p, head);
-        delete head;
+    {     
+        this->head->p = this->head->l = this->head->r = this->head;
+        this->head->h = 0;
     }
 
-
-    link_t findInsertPosition(const Value& value) const
-    {
-        return bstFindInsertPosition(head->p, head, value, cmp);
-    }
-    /**
-     * @brief insertOneNode :
-     * @param value : the value to be insert
-     * @param unique
-     * @return
-     */
     link_t insertOneNode(const Value& value, bool unique = false)
     {
 //        std::cout << "insertOneNode: " << value << std::endl;
         // find new node's parent
         link_t p = findInsertPosition(value);
-        if (p == head)
+        if (p == this->head)
         {// insert as root
             // new node will be leaf node
             link_t newnode = getNewNodeAsLeaf(value);
-            head->p = newnode;
-            newnode->p = head;
-            cnt++;
+            this->head->p = newnode;
+            newnode->p = this->head;
+            this->increaseCnt();
             insertAdjust(newnode);
             return newnode;
         }
@@ -118,27 +78,12 @@ public:
                     p->l = newnode;
                 else
                     p->r = newnode;
-                cnt++;
+                this->increaseCnt();
                 insertAdjust(newnode);
                 return newnode;
             }
         }
     }
-    /**
-     * @brief insertAdjust
-     * @param newnode
-     */
-    bool adjustHeight(link_t adjustNode, link_t changedChild)
-    {
-        if (height(adjustNode) == height(changedChild))
-        {
-            ++(adjustNode->h);
-            return true;
-        }
-        else return false;
-    }
-
-
     void insertAdjust(link_t newnode)
     {
         newnode->h = 1;//
@@ -146,7 +91,7 @@ public:
         link_t changedChild = newnode;
         link_t adjustNode = parent(changedChild);
 
-        while (adjustNode != head)
+        while (adjustNode != this->head)
         {
             if (adjustHeight(adjustNode, changedChild))// adjustNode's height changed
             {
@@ -161,8 +106,8 @@ public:
                     {
                         //                            std::cout << "rl" << std::endl;
                         link_t changedChildLeft = left(changedChild);
-                        bstRightRotation(changedChild, head);
-                        bstLeftRotation(adjustNode, head);
+                        bstRightRotation(changedChild, this->head);
+                        bstLeftRotation(adjustNode, this->head);
 
                         ++(changedChildLeft->h);
                         --(changedChild->h);
@@ -174,7 +119,7 @@ public:
                     else// right right
                     {
                         //                            std::cout << "rr" << std::endl;
-                        bstLeftRotation(adjustNode, head);
+                        bstLeftRotation(adjustNode, this->head);
                         adjustNode->h = adjustNode->h - 2;
 
                         adjustNode = parent(changedChild);
@@ -188,8 +133,8 @@ public:
                     {
                         //                            std::cout << "lr" << std::endl;
                         link_t changedChildRight = right(changedChild);
-                        bstLeftRotation(changedChild, head);
-                        bstRightRotation(adjustNode, head);
+                        bstLeftRotation(changedChild, this->head);
+                        bstRightRotation(adjustNode, this->head);
 
                         ++(changedChildRight->h);
                         --(changedChild->h);
@@ -201,7 +146,7 @@ public:
                     else// left left
                     {
                         //                            std::cout << "ll" << std::endl;
-                        bstRightRotation(adjustNode, head);
+                        bstRightRotation(adjustNode, this->head);
                         adjustNode->h = adjustNode->h - 2;
 
                         adjustNode = parent(changedChild);
@@ -216,37 +161,26 @@ public:
             else return;// adjustNode's height not change
         }
     }
-    void treeShap(link_t subtree ,size_t table_cnt = 0)
-    {
-        if (subtree == head) std::cout << std::string(table_cnt, '\t') << "[None]" << std::endl;
-        else
-        {
-
-            treeShap(right(subtree), table_cnt + 1);
-            std::cout << std::string(table_cnt, '\t') + "(" + to_string(subtree->v) + ", " + to_string(subtree->h) + ")" << std::endl;
-            treeShap(left(subtree), table_cnt + 1);
-        }
-    }
 
     void deleteOneNode(link_t del)
     {
         link_t d = del;
-        if (del->l != head && del->r != head)//
+        if (del->l != this->head && del->r != this->head)//
         {
             d = next(del);
             del->v = d->v;// copy data from next
         }
-        // if left(del) && right(del) then left(d)==head , right(d) == red/head
+        // if left(del) && right(del) then left(d)==this->head , right(d) == red/this->head
         // if left(del)
 
-        link_t n = right(d) == head ? left(d) : right(d);//
+        link_t n = right(d) == this->head ? left(d) : right(d);//
         link_t p = parent(d);
         if (d == left(p)) p->l = n;
         else if (d == right(p)) p->r = n;
         else p->p = n;
-        if (n != head) n->p = p;
+        if (n != this->head) n->p = p;
 
-        cnt--;
+        this->decreaseCnt();
         delete d;
         //treeShap(root());
 
@@ -256,7 +190,7 @@ public:
     {
   //      std::cout << "deleteAdjust: " << adjustNode->v << '\t' << childChanged->v << std::endl;
 
-            while (adjustNode != head)// childChanged's height decrease
+            while (adjustNode != this->head)// childChanged's height decrease
             {
                 int lh, rh;
                 if (childChanged == left(adjustNode))// delete left
@@ -279,11 +213,11 @@ public:
                         link_t r = right(adjustNode);
                         link_t rl = left(r);
                         link_t rr = right(r);
-                        if (rr == head)// (rl != head)(rr == head)
+                        if (rr == this->head)// (rl != this->head)(rr == this->head)
                         {
- //                           std::cout << "rr == head" << std::endl;
-                            bstRightRotation(r, head);
-                            bstLeftRotation(adjustNode, head);
+ //                           std::cout << "rr == this->head" << std::endl;
+                            bstRightRotation(r, this->head);
+                            bstLeftRotation(adjustNode, this->head);
 
                             adjustNode->h = adjustNode->h - 2;
                             --(r->h);
@@ -292,11 +226,11 @@ public:
                             childChanged = rl;
                             adjustNode = parent(childChanged);
                         }
-                        else // (rr != head)(rl unknown)
+                        else // (rr != this->head)(rl unknown)
                         {
-      //                      std::cout << "rr != head" << std::endl;
-                            bstLeftRotation(adjustNode, head);
-                            if (rl != head)
+      //                      std::cout << "rr != this->head" << std::endl;
+                            bstLeftRotation(adjustNode, this->head);
+                            if (rl != this->head)
                             {
                                 --(adjustNode->h);
                                 ++(r->h);
@@ -333,11 +267,11 @@ public:
                         link_t l = left(adjustNode);
                         link_t ll = left(l);
                         link_t lr = right(l);
-                        if (ll == head)// (lr != head)(ll == head)
+                        if (ll == this->head)// (lr != this->head)(ll == this->head)
                         {
-   //                         std::cout << "ll == head" << std::endl;
-                            bstLeftRotation(l, head);
-                            bstRightRotation(adjustNode, head);
+   //                         std::cout << "ll == this->head" << std::endl;
+                            bstLeftRotation(l, this->head);
+                            bstRightRotation(adjustNode, this->head);
 
                             adjustNode->h = adjustNode->h - 2;
                             --(l->h);
@@ -346,11 +280,11 @@ public:
                             childChanged = lr;
                             adjustNode = parent(childChanged);
                         }
-                        else // (ll != head)(lr unknown)
+                        else // (ll != this->head)(lr unknown)
                         {
-   //                         std::cout << "ll != head" << std::endl;
-                            bstRightRotation(adjustNode, head);
-                            if (lr != head)
+   //                         std::cout << "ll != this->head" << std::endl;
+                            bstRightRotation(adjustNode, this->head);
+                            if (lr != this->head)
                             {
                                 --(adjustNode->h);
                                 ++(l->h);
@@ -368,47 +302,19 @@ public:
                 }
             }
     }
-
-    link_t next(link_t pnode)
+protected:
+    int factor(link_t pnode)
     {
-        if (right(pnode) != head) return leftmost(right(pnode));
-        else
+        return height(left(pnode)) - height(right(pnode));
+    }
+    bool adjustHeight(link_t adjustNode, link_t changedChild)
+    {
+        if (height(adjustNode) == height(changedChild))
         {
-            link_t c = pnode;
-            link_t p = parent(c);
-            while (c == right(p))
-            {
-                c = p;
-                p = parent(p);
-            }
-            return p;// return head if pnode is max one
+            ++(adjustNode->h);
+            return true;
         }
-    }
-    link_t prev(link_t pnode)
-    {
-        if (left(pnode) != head) return rightmost(left(pnode));
-        else
-        {
-            link_t c = pnode;
-            link_t p = parent(c);
-            while (c == left(p))
-            {
-                c = p;
-                p = parent(p);
-            }
-            return p;// return head if pnode is min one
-        }
-
-    }
-    link_t minimum()
-    {
-        if (!empty()) return leftmost(root());
-        else return head;
-    }
-    link_t maximum()
-    {
-        if (!empty()) return rightmost(root());
-        else return head;
+        else return false;
     }
 };
 }
