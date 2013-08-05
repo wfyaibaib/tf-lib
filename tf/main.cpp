@@ -20,7 +20,7 @@ int main()
         tree.treeShap();
    //     bstDisplayNodeRecusive(tree.root(), tree.head);
     }
-    for (auto it = tree.begin(); it != tree.end(); ++it)
+    for (tf::splaytree<int>::iterator it = tree.begin(); it != tree.end(); ++it)
     {
         std::cout << *it << std::endl;
     }

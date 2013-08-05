@@ -10,6 +10,7 @@ struct xrange
     typedef int difference_type;
     typedef void pointer;
     typedef xrange& reference;
+    typedef const xrange& con_ref;
 
     value_type _start;
     value_type _skip;
@@ -27,12 +28,12 @@ struct xrange
     {
         return _start;
     }
-    bool operator==(const reference&)
+    bool operator==(const reference)
     {
         return false;
     }
 
-    bool operator!=(const reference&)
+    bool operator!=(const reference)
     {
         return _skip > 0 ? _start < _end : _start > _end;
     }
