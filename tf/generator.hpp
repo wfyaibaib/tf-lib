@@ -1,5 +1,6 @@
 #ifndef GENERATOR_HPP
 #define GENERATOR_HPP
+namespace tf{
 struct skipgen
 {
     int start;
@@ -12,5 +13,5 @@ struct skipgen
         return rt;
     }
 };
-
+}
 #endif // GENERATOR_HPP

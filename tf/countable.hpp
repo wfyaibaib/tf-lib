@@ -1,5 +1,6 @@
 #ifndef COUNTABLE_HPP
 #define COUNTABLE_HPP
+namespace tf{
 struct countable
 {
     size_t cnt;
@@ -10,5 +11,5 @@ struct countable
     size_t decreaseCnt() {return --cnt;}
     size_t size() const { return cnt;}
 };
-
+}
 #endif // COUNTABLE_HPP
