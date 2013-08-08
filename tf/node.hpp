@@ -1,8 +1,9 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 #include <string>
-#include <string.hpp>
+#include "string.hpp"
 #include <iostream>
+#include <functional>
 namespace tf {
 /**************************************************************************/
 // slink template
@@ -170,8 +171,7 @@ namespace tf {
         else if (n == left(p)) p->l = l;
         else p->r = l;
     }
-// successor:
-            //
+// successor
     template <class TLinkNode>
     TLinkNode* bstSuccessor(TLinkNode* pnode, TLinkNode* end_head)
     {
