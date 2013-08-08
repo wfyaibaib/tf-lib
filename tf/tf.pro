@@ -14,5 +14,7 @@ HEADERS += \
     generator.hpp \
     countable.hpp \
     hasvalue.hpp \
-    bst.hpp
+    bst.hpp \
+    iterator.hpp \
+    range.hpp
 

@@ -3,9 +3,14 @@
 #include "avltree.hpp"
 #include "splaytree.hpp"
 #include "bst.hpp"
+#include "range.hpp"
+#include <iterator>
+#include <algorithm>
 
 int main()
 {
+    std::copy(xrange<float>(0.5, -10, -1), xrange<float>(),
+              std::ostream_iterator<float>(std::cout, " "));
     tf::rbtree<int> tree;
     const int N = 10;
     for (int i = 0; i < N; i++)
