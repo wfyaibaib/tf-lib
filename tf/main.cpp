@@ -5,12 +5,11 @@
 #include "bst.hpp"
 #include "range.hpp"
 #include <iterator>
-#include <algorithm>
+
 
 int main()
 {
-    std::copy(xrange<float>(0.5, -10, -1), xrange<float>(),
-              std::ostream_iterator<float>(std::cout, " "));
+
     tf::rbtree<int> tree;
     const int N = 10;
     for (int i = 0; i < N; i++)
@@ -19,8 +18,13 @@ int main()
         std::cout << "-----------------------------------------" << std::endl;
         std::cout << "add\t" << i << std::endl;
         tree.treeShap();
-//        bstDisplayNodeRecusive(tree.root(), tree.head);
+   //     bstDisplayNodeRecusive(tree.root(), tree.head);
     }
+    for (auto it = tree.begin(); it != tree.end(); ++it)
+    {
+        std::cout << *it << std::endl;
+    }
+  //  copy(tree.begin(), tree.end(), std::ostream_iterator<int>(std::cout, " "));
 
 //    for (int i = 0; i < N; i++)
 //    {

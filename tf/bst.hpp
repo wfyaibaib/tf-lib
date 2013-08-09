@@ -4,10 +4,10 @@
 #include "node.hpp"
 #include "countable.hpp"
 #include "hasvalue.hpp"
+#include "iterator.hpp"
 #include <functional>
 
-namespace tf
-{
+namespace tf{
 // bst_base
 template <class TLinkNode,
           class Cmp = std::less<typename TLinkNode::value_type> >
@@ -16,6 +16,10 @@ struct bst_base : public countable
     typedef TLinkNode  node_t;
     typedef typename TLinkNode::value_type Value;
     typedef TLinkNode* link_t;
+
+    typedef iterable<TLinkNode> iterator;
+
+
 /**************************************************************************/
     /*
      *countable:
@@ -36,8 +40,8 @@ struct bst_base : public countable
         delete head;
     }
 /**************************************************************************/
-    link_t leftMost(link_t pnode = root()) { return bstLeftMost(pnode, head); }
-    link_t rightMost(link_t pnode = root()) { return bstRightMost(pnode, head); }
+    link_t leftMost() { return bstLeftMost(root(), head); }
+    link_t rightMost() { return bstRightMost(root(), head); }
     void leftRotation(link_t n) { bstLeftRotation(n, head); }
     void rightRotation(link_t n) { bstRightRotation(n, head); }
     bool isRoot(link_t pnode) { return parent(pnode) == head; }
@@ -154,8 +158,9 @@ struct bst_base : public countable
 
         delete d;
     }
-
+/**************************************************************************/
+    iterator begin() { return leftMost(); }
+    iterator end() { return head; }
 };
-
 }
 #endif // BST_HPP
