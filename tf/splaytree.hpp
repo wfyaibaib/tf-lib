@@ -17,67 +17,17 @@ struct splaynode : public tlink<splaynode<Value> >,
  };
 
 template <class Value, class Cmp = std::less<Value> >
-class splaytree
+class splaytree : public bst_base<splaynode<Value>, Cmp>
 {
 public:
     typedef splaynode<Value> node_t;
     typedef splaynode<Value>* link_t;
 
-    std::string display_recusive(link_t root)
-    {
-        if (root == head) return "[None]";
-        else return
-            (
-            "[" +
-            display_recusive(root->l) +
-            " (" +
-            to_string(root->v) +
-            ") " +
-            display_recusive(root->r) +
-            "]"
-            );
-    }
-
-    link_t leftmost(link_t pnode) { return bstLeftMost(pnode, head); }
-    link_t rightmost(link_t pnode) { return bstRightMost(pnode, head); }
-    void leftRotation(link_t n) { bstLeftRotation(n, head); }
-    void rightRotation(link_t n) { bstRightRotation(n, head); }
-    bool isRoot(link_t pnode) { return parent(pnode) == head; }
-    bool empty() { return cnt == 0; }
-    link_t root() { return parent(head); }
-    link_t getNewNodeAsLeaf(const Value& value) { return bstGetNewNodeAsLeaf(value, head); }
-
-    std::string display() { return display_recusive(root()); }
-
-    link_t head;
-    size_t cnt;
-    Cmp cmp;
-
     splaytree()
     {
-        cmp = Cmp();
-
-        head = new node_t();
         head->p = head->l = head->r = head;
-
-        cnt = 0;
-    }
-    ~splaytree()
-    {
-        if (!empty()) bstDeleteNodeRecusive(head->p, head);
-        delete head;
     }
 
-    link_t findInsertPosition(const Value& value) const
-    {
-        return bstFindInsertPosition(head->p, head, value, cmp);
-    }
-    /**
-     * @brief insertOneNode :
-     * @param value : the value to be insert
-     * @param unique
-     * @return
-     */
     link_t insertOneNode(const Value& value, bool unique = false)
     {
 //        std::cout << "insertOneNode: " << value << std::endl;
@@ -149,60 +99,6 @@ public:
     {
         splay(del);
         bstDeleteOneNode(del, head);
-    }
-
-    void treeShap(link_t subtree ,size_t table_cnt = 0)
-    {
-        if (subtree == head) std::cout << std::string(table_cnt, '\t') << "[None]" << std::endl;
-        else
-        {
-
-            treeShap(right(subtree), table_cnt + 1);
-            std::cout << std::string(table_cnt, '\t') + "(" + to_string(subtree->v)  + ")" << std::endl;
-            treeShap(left(subtree), table_cnt + 1);
-        }
-    }
-
-    link_t next(link_t pnode)
-    {
-        if (right(pnode) != head) return leftmost(right(pnode));
-        else
-        {
-            link_t c = pnode;
-            link_t p = parent(c);
-            while (c == right(p))
-            {
-                c = p;
-                p = parent(p);
-            }
-            return p;// return head if pnode is max one
-        }
-    }
-    link_t prev(link_t pnode)
-    {
-        if (left(pnode) != head) return rightmost(left(pnode));
-        else
-        {
-            link_t c = pnode;
-            link_t p = parent(c);
-            while (c == left(p))
-            {
-                c = p;
-                p = parent(p);
-            }
-            return p;// return head if pnode is min one
-        }
-
-    }
-    link_t minimum()
-    {
-        if (!empty()) return leftmost(root());
-        else return head;
-    }
-    link_t maximum()
-    {
-        if (!empty()) return rightmost(root());
-        else return head;
     }
 
 };

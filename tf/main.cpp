@@ -10,7 +10,7 @@
 int main()
 {
 
-    tf::rbtree<int> tree;
+    tf::splaytree<int> tree;
     const int N = 10;
     for (int i = 0; i < N; i++)
     {

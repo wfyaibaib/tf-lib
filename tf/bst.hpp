@@ -5,6 +5,7 @@
 #include "countable.hpp"
 #include "hasvalue.hpp"
 #include "iterator.hpp"
+
 #include <functional>
 
 namespace tf{
@@ -17,7 +18,50 @@ struct bst_base : public countable
     typedef typename TLinkNode::value_type Value;
     typedef TLinkNode* link_t;
 
-    typedef iterable<TLinkNode> iterator;
+
+/**************************************************************************/
+
+    struct iterator
+    {
+        typedef TLinkNode node_t;
+        typedef TLinkNode* link_t;
+
+        typedef std::bidirectional_iterator_tag iterator_category;
+        typedef typename TLinkNode::value_type value_type;
+        typedef value_type& reference;
+        typedef value_type* pointer;
+        typedef int difference_type;
+
+        link_t _p;
+        link_t _head;
+
+        iterator(link_t p, link_t head):_p(p), _head(head){}
+
+        iterator& operator++()
+        {
+            _p = bstSuccessor(_p, _head);
+            return *this;
+        }
+        iterator& operator--()
+        {
+            _p = _p->l;
+            return *this;
+        }
+
+        reference operator*()
+        {
+       //     std::cout << "call *" << std::endl;
+            return _p->v;
+        }
+        bool operator==(const iterator& other)
+        {
+            return _p == other._p;
+        }
+        bool operator!=(const iterator& other)
+        {
+            return _p != other._p;
+        }
+    };
 
 
 /**************************************************************************/
@@ -90,12 +134,12 @@ struct bst_base : public countable
     }
     link_t minimum()
     {
-        if (!empty()) return leftMost(root());
+        if (!empty()) return leftMost();
         else return head;
     }
     link_t maximum()
     {
-        if (!empty()) return rightMost(root());
+        if (!empty()) return rightMost();
         else return head;
     }
 /**************************************************************************/
@@ -159,8 +203,8 @@ struct bst_base : public countable
         delete d;
     }
 /**************************************************************************/
-    iterator begin() { return leftMost(); }
-    iterator end() { return head; }
+    iterator begin() { return iterator(leftMost(), head); }
+    iterator end() { return iterator(head, head); }
 };
 }
 #endif // BST_HPP
