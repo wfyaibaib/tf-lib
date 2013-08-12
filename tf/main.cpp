@@ -10,20 +10,22 @@
 int main()
 {
 
-    tf::splaytree<int> tree;
-    const int N = 10;
+
+    /*
+    tf::rbtree<int> tree;
+    const int N = 0;
     for (int i = 0; i < N; i++)
     {
         tree.insertOneNode(i);
         std::cout << "-----------------------------------------" << std::endl;
         std::cout << "add\t" << i << std::endl;
         tree.treeShap();
-   //     bstDisplayNodeRecusive(tree.root(), tree.head);
     }
-    for (tf::splaytree<int>::iterator it = tree.begin(); it != tree.end(); ++it)
+    for (tf::rbtree<int>::iterator it = tree.begin(); it != tree.end(); ++it)
     {
         std::cout << *it << std::endl;
     }
+    */
   //  copy(tree.begin(), tree.end(), std::ostream_iterator<int>(std::cout, " "));
 
 //    for (int i = 0; i < N; i++)
