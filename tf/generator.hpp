@@ -13,5 +13,6 @@ struct skipgen
         return rt;
     }
 };
+
 }
 #endif // GENERATOR_HPP

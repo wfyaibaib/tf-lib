@@ -16,5 +16,7 @@ HEADERS += \
     hasvalue.hpp \
     bst.hpp \
     iterator.hpp \
-    range.hpp
+    range.hpp \
+    avlnode.hpp \
+    aatree.hpp
 

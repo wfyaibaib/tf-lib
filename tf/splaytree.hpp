@@ -1,6 +1,6 @@
 #ifndef SPLAYTREE_H
 #define SPLAYTREE_H
-#include "node.hpp"
+#include "bst.hpp"
 #include <functional>
 #include <string>
 namespace tf
@@ -25,7 +25,7 @@ public:
 
     splaytree()
     {
-        head->p = head->l = head->r = head;
+        this->head->p = this->head->l = this->head->r = this->head;
     }
 
     link_t insertOneNode(const Value& value, bool unique = false)
@@ -33,13 +33,13 @@ public:
 //        std::cout << "insertOneNode: " << value << std::endl;
         // find new node's parent
         link_t p = findInsertPosition(value);
-        if (p == head)
+        if (p == this->head)
         {// insert as root
             // new node will be leaf node
             link_t newnode = getNewNodeAsLeaf(value);
-            head->p = newnode;
-            newnode->p = head;
-            cnt++;
+            this->head->p = newnode;
+            newnode->p = this->head;
+            this->increaseCnt();
             insertAdjust(newnode);
             return newnode;
         }
@@ -54,7 +54,7 @@ public:
                     p->l = newnode;
                 else
                     p->r = newnode;
-                cnt++;
+               this->increaseCnt();
                 insertAdjust(newnode);
                 return newnode;
             }
@@ -62,30 +62,30 @@ public:
     }
     void splay(link_t pnode)
     {
-        while (pnode != root())
+        while (pnode != this->root())
         {
-            if (parent(pnode) != root())//
+            if (parent(pnode) != this->root())//
             {
                 link_t p = parent(pnode);
                 link_t pp = parent(p);
                 if (p == left(pp))
                 {
                     if (pnode == right(p))
-                        bstLeftRotation(p, head);
-                    bstRightRotation(pp, head);
+                        bstLeftRotation(p, this->head);
+                    bstRightRotation(pp, this->head);
                 }
                 else
                 {
                     if (pnode == left(p))
-                        bstRightRotation(p, head);
-                    bstLeftRotation(pp, head);
+                        bstRightRotation(p, this->head);
+                    bstLeftRotation(pp, this->head);
                 }
             }
             else
             {
                 link_t p = parent(pnode);
-                if (pnode == left(p)) bstRightRotation(p, head);
-                else bstLeftRotation(p, head);
+                if (pnode == left(p)) bstRightRotation(p, this->head);
+                else bstLeftRotation(p, this->head);
                 return;
             }
         }
@@ -98,7 +98,7 @@ public:
     void deleteOneNode(link_t del)
     {
         splay(del);
-        bstDeleteOneNode(del, head);
+        bstDeleteOneNode(del, this->head);
     }
 
 };

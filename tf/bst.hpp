@@ -37,30 +37,11 @@ struct bst_base : public countable
 
         iterator(link_t p, link_t head):_p(p), _head(head){}
 
-        iterator& operator++()
-        {
-            _p = bstSuccessor(_p, _head);
-            return *this;
-        }
-        iterator& operator--()
-        {
-            _p = _p->l;
-            return *this;
-        }
-
-        reference operator*()
-        {
-       //     std::cout << "call *" << std::endl;
-            return _p->v;
-        }
-        bool operator==(const iterator& other)
-        {
-            return _p == other._p;
-        }
-        bool operator!=(const iterator& other)
-        {
-            return _p != other._p;
-        }
+        iterator& operator++() { _p = bstSuccessor(_p, _head); return *this; }
+        iterator& operator--() { _p = _p->l; return *this; }
+        reference operator*() { return _p->v; }
+        bool operator==(const iterator& other) { return _p == other._p; }
+        bool operator!=(const iterator& other) { return _p != other._p; }
     };
 
 
