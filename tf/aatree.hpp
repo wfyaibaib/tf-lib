@@ -26,6 +26,32 @@ protected:
 public:
     typedef avlnode<Value> node_t;
     typedef avlnode<Value>* link_t;
+    bool isAATree(link_t root)
+    {
+        if (root == this->head) return true;
+
+        int h = height(root);
+        int lh = height(left(root));
+        int rh = height(right(root));
+        int ph = height(parent(root));
+
+//        if (h != lh + 1) return false;
+//        if (h != rh && h != rh + 1) return false;
+
+
+//        if (h == ph && h == rh) return false;
+
+        if ((h != lh + 1) ||
+                (h != rh && h != rh + 1) ||
+                (h == ph && h == rh)
+                )
+        {
+            std::cout << "not aa , at: " << root->valueToString() << std::endl;
+            return false;
+        }
+
+        return isAATree(left(root)) && isAATree(right(root));
+    }
 
     aatree()
     {
@@ -33,7 +59,7 @@ public:
         this->head->h = 0;
     }
 
-    link_t insertOneNode(const Value &value, bool unique = false)
+  link_t insertOneNode(const Value &value, bool unique = false)
     {
         // find new node's parent
         link_t p = findInsertPosition(value);
@@ -92,7 +118,7 @@ public:
               // nextadjust = parent(adjustnode)
 
           }
-          std::cout << changed << std::endl;
+ //         std::cout << changed << std::endl;
           if (changed) unChangedCnt = 0;
           else if(++unChangedCnt == 2) break;
           else;
@@ -124,32 +150,100 @@ public:
 
       deleteAdjust(p, n);
   }
+  void lowerAndAdjust(link_t adjustNode)
+  {
+//      std::cout << "after bstDelete:" << std::endl;
+//      this->treeShap();
+
+//      std::cout << "head height: " << height(this->head) << std::endl;
+      while (adjustNode != this->head)
+      {
+//          std::cout << "adjust node:" << adjustNode->valueToString() << std::endl;
+          int leftDiff = height(adjustNode) - height(left(adjustNode));
+          int rightDiff = height(adjustNode) - height(right(adjustNode));
+
+//          std::cout << "<" << leftDiff << ", " << rightDiff << ">" << std::endl;
+          if (leftDiff == 2)// left loss height
+          {
+              if (rightDiff == 1)// right child is black
+              {
+//                  std::cout << "right child is black" << std::endl;
+                  if (height(right(right(adjustNode))) == height(right(adjustNode)))//has right right :red
+                  {
+//                      std::cout << "has right right" << std::endl;
+                      --(adjustNode->h);
+                      split(adjustNode);
+                      return;
+                  }
+                  else// has no right right, next loop
+                  {
+//                      std::cout << "has no right right" << std::endl;
+                      --(adjustNode->h);
+                      adjustNode = parent(adjustNode);
+                  }
+              }
+              else // right is red
+              {
+//                  std::cout << "right child is red" << std::endl;
+
+                  --(adjustNode->h);
+                  --(right(adjustNode)->h);
+
+                  bool hasRedChild1 = (height(right(left(right(adjustNode)))) == height(left(right(adjustNode))));
+                  bool hasRedChild2 = (height(right(right(right(adjustNode)))) == height(right(right(adjustNode))));
+//                  std::cout << "(" << hasRedChild1 << ", " << hasRedChild2 << ")" << std::endl;
+                  skew(right(adjustNode));// common op
+                  if (hasRedChild1)
+                  {
+                      skew(right(right(adjustNode)));
+                      // adjust r rr rrr rrrr (rrrrr)
+                      split(adjustNode);
+                      // (adjust r (null rr (null rrr (null rrrr (rrrrr)))
+                      link_t p = parent(adjustNode);
+                      split(right(p));
+                  }
+                  else if (hasRedChild2)
+                  {
+                      split(adjustNode);
+                      link_t p = parent(adjustNode);
+                      split(right(p));
+                  }
+                  else
+                  {
+                      split(adjustNode);
+                  }
+
+              }
+          }
+          else if (rightDiff == 2)// right loss height, next loop
+          {// leftDiff must be 1,
+
+              --(adjustNode->h);
+              // ((head left *) adjust *)
+              if (height(left(adjustNode)) == height(right(left(adjustNode))))
+              {
+                  leftRotation(left(adjustNode));
+                  rightRotation(adjustNode);
+                  ++(parent(adjustNode)->h);
+                  return;
+
+              }
+              else
+              {
+                  rightRotation(adjustNode);
+                  adjustNode = parent(parent(adjustNode));
+              }
+          }
+          else//
+          {
+              return;
+          }
+      }
+  }
+
   void deleteAdjust(link_t adjustNode, link_t childChanged)
   {
-      // ((head del del_right) adjust (*))
-      if (childChanged != this->head)// replaced nod is right red node
-          return;
-      else // deleted node is black and has no right child
-      {//((head del head) adjust (( head redleft *) red (head redright *))
-       // or ((head del head) adjust (head black *))
-          if (height(adjustNode) != height(right(adjustNode)))
-          {
-              if (right(right(adjustNode)) != this->head)
-              {//((head del head) adjust (head black red))
-                  --(adjustNode->h);
-                  split(adjustNode);
-                  return;
-              }
-              else//((head del head) adjust (head black head))
-              {
-                  --(adjustNode->h);
-              }
-
-          }
-
-          --(adjustNode->h);
-          insertAdjust(adjustNode);
-      }
+      lowerAndAdjust(adjustNode);
   }
 
   void skew(link_t pnode)

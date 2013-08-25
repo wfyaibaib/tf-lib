@@ -17,37 +17,36 @@ int main()
 
 
     tf::aatree<int> tree;
-    const int N = 30;
+    const int N = 500;
     for (int i = 0; i < N; i++)
     {
         int added = r();
         std::cout << "-----------------------------------------" << std::endl;
         std::cout << "add\t" << added << std::endl;
         tree.insertOneNode(added);
-
- //       tree.treeShap();
+        std::cout << "size: " << tree.size() << std::endl;
+        if (!tree.isAATree(tree.root()))
+        {
+            std::cout << "not aatree1" << std::endl;
+            return 0;
+        }
     }
-    tree.treeShap();
-//    for (tf::rbtree<int>::iterator it = tree.begin(); it != tree.end(); ++it)
-//    {
-//        std::cout << *it << std::endl;
-//    }
+    for (int i = 0; i < N; ++i)
+    {
+         std::cout << "-----------------------------------------" << std::endl;
+         std::cout << "del cnt = " << i << std::endl;
+         std::cout << "size: " << tree.size() << std::endl;
+  //      tree.treeShap();
+        std::cout << "delete root()" << std::endl;
+        tree.deleteOneNode(tree.root());
 
-  //  copy(tree.begin(), tree.end(), std::ostream_iterator<int>(std::cout, " "));
-
-//    for (int i = 0; i < N; i++)
-//    {
-//        std::cout << "-----------------------------------------" << std::endl;
-//        std::cout << "delete root node: cnt = " << i << std::endl;
-//        tree.deleteOneNode(tree.root());
-//        tree.treeShap(tree.root());
-//    }
-
-    //tree.leftRotation(tree.root());
-    //tree.leftRotation(tree.root());
-    //tree.rightRotation(tree.root());
-    //tree.rightRotation(tree.root());
-
+        if (!tree.isAATree(tree.root()))
+        {
+            std::cout << "not aatree1" << std::endl;
+            tree.treeShap();
+            return 0;
+        }
+    }
 
     return 0;
 }
