@@ -25,14 +25,14 @@ public:
     typedef avlnode<Value>* link_t;
 
     avltree()
-    {     
+    {
         this->head->p = this->head->l = this->head->r = this->head;
         this->head->h = 0;
     }
 
     link_t insertOneNode(const Value& value, bool unique = false)
     {
-//        std::cout << "insertOneNode: " << value << std::endl;
+        //        std::cout << "insertOneNode: " << value << std::endl;
         // find new node's parent
         link_t p = findInsertPosition(value);
         if (p == this->head)
@@ -47,19 +47,29 @@ public:
         }
         else
         {
-            if (unique && !cmp(value, p->v) && !cmp(p->v, value)) return 0;
-            else// multi set
+            if (unique)
             {
-                link_t newnode = getNewNodeAsLeaf(value);
-                newnode->p = p;
-                if (cmp(value, p->v))
-                    p->l = newnode;
-                else
-                    p->r = newnode;
-                this->increaseCnt();
-                insertAdjust(newnode);
-                return newnode;
+                link_t prevNodeOfInsert = p;
+                if (cmp(value, p->v))// insert as left child
+                {
+                    prevNodeOfInsert = prev(p);
+                }
+                if (prevNodeOfInsert != this->head &&
+                        !cmp(value, prevNodeOfInsert->v) && // value >=
+                        !cmp(prevNodeOfInsert->v, value)      //
+                        )
+                    return 0;
             }
+            link_t newnode = getNewNodeAsLeaf(value);
+            newnode->p = p;
+            if (cmp(value, p->v))
+                p->l = newnode;
+            else
+                p->r = newnode;
+            this->increaseCnt();
+            insertAdjust(newnode);
+            return newnode;
+
         }
     }
     void insertAdjust(link_t newnode)
@@ -166,119 +176,119 @@ public:
     }
     void deleteAdjust(link_t adjustNode, link_t childChanged)// childChanged subtree decrease height
     {
-  //      std::cout << "deleteAdjust: " << adjustNode->v << '\t' << childChanged->v << std::endl;
+        //      std::cout << "deleteAdjust: " << adjustNode->v << '\t' << childChanged->v << std::endl;
 
-            while (adjustNode != this->head)// childChanged's height decrease
+        while (adjustNode != this->head)// childChanged's height decrease
+        {
+            int lh, rh;
+            if (childChanged == left(adjustNode))// delete left
             {
-                int lh, rh;
-                if (childChanged == left(adjustNode))// delete left
+                //             std::cout << "delete left " << std::endl;
+                lh = height(childChanged);
+                rh = height(right(adjustNode));
+                //             std::cout << "< " << lh << ", " << rh << ">" << std::endl;
+                if (lh + 1 == rh) return;// old lh = old rh
+                else if (lh == rh)// old lh > old rh
                 {
-       //             std::cout << "delete left " << std::endl;
-                    lh = height(childChanged);
-                    rh = height(right(adjustNode));
-       //             std::cout << "< " << lh << ", " << rh << ">" << std::endl;
-                    if (lh + 1 == rh) return;// old lh = old rh
-                    else if (lh == rh)// old lh > old rh
-                    {
 
-                        --(adjustNode->h);
-                        childChanged = adjustNode;
-                        adjustNode = parent(adjustNode);
+                    --(adjustNode->h);
+                    childChanged = adjustNode;
+                    adjustNode = parent(adjustNode);
 
-                    }
-                    else//(lh + 1 < rh) old lh < old rh
-                    {
-                        link_t r = right(adjustNode);
-                        link_t rl = left(r);
-                        link_t rr = right(r);
-                        if (rr == this->head)// (rl != this->head)(rr == this->head)
-                        {
- //                           std::cout << "rr == this->head" << std::endl;
-                            bstRightRotation(r, this->head);
-                            bstLeftRotation(adjustNode, this->head);
-
-                            adjustNode->h = adjustNode->h - 2;
-                            --(r->h);
-                            ++(rl->h);
-
-                            childChanged = rl;
-                            adjustNode = parent(childChanged);
-                        }
-                        else // (rr != this->head)(rl unknown)
-                        {
-      //                      std::cout << "rr != this->head" << std::endl;
-                            bstLeftRotation(adjustNode, this->head);
-                            if (rl != this->head)
-                            {
-                                --(adjustNode->h);
-                                ++(r->h);
-
-                            }
-                            else
-                            {
-                                adjustNode->h = adjustNode->h - 2;
-                            }
-                            childChanged = r;
-                            adjustNode = parent(childChanged);
-                        }
-                    }
                 }
-                else// right
+                else//(lh + 1 < rh) old lh < old rh
                 {
-  //                  std::cout << "delete right " << std::endl;
-
-                    rh = height(childChanged);
-                    lh = height(left(adjustNode));
-
-  //                  std::cout << "< " << lh << ", " << rh << ">" << std::endl;
-
-                    if (rh + 1 == lh) return;// old rh = old lh
-                    else if (rh == lh)// old lh < old rh
+                    link_t r = right(adjustNode);
+                    link_t rl = left(r);
+                    link_t rr = right(r);
+                    if (rr == this->head)// (rl != this->head)(rr == this->head)
                     {
-                        --(adjustNode->h);
-                        childChanged = adjustNode;
-                        adjustNode = parent(adjustNode);
+                        //                           std::cout << "rr == this->head" << std::endl;
+                        bstRightRotation(r, this->head);
+                        bstLeftRotation(adjustNode, this->head);
 
+                        adjustNode->h = adjustNode->h - 2;
+                        --(r->h);
+                        ++(rl->h);
+
+                        childChanged = rl;
+                        adjustNode = parent(childChanged);
                     }
-                    else//(rh + 1 < lh) old lh > old rh
+                    else // (rr != this->head)(rl unknown)
                     {
-                        link_t l = left(adjustNode);
-                        link_t ll = left(l);
-                        link_t lr = right(l);
-                        if (ll == this->head)// (lr != this->head)(ll == this->head)
+                        //                      std::cout << "rr != this->head" << std::endl;
+                        bstLeftRotation(adjustNode, this->head);
+                        if (rl != this->head)
                         {
-   //                         std::cout << "ll == this->head" << std::endl;
-                            bstLeftRotation(l, this->head);
-                            bstRightRotation(adjustNode, this->head);
+                            --(adjustNode->h);
+                            ++(r->h);
 
+                        }
+                        else
+                        {
                             adjustNode->h = adjustNode->h - 2;
-                            --(l->h);
-                            ++(lr->h);
-
-                            childChanged = lr;
-                            adjustNode = parent(childChanged);
                         }
-                        else // (ll != this->head)(lr unknown)
-                        {
-   //                         std::cout << "ll != this->head" << std::endl;
-                            bstRightRotation(adjustNode, this->head);
-                            if (lr != this->head)
-                            {
-                                --(adjustNode->h);
-                                ++(l->h);
-
-                            }
-                            else
-                            {
-                                adjustNode->h = adjustNode->h - 2;
-                            }
-                            childChanged = l;
-                            adjustNode = parent(childChanged);
-                        }
+                        childChanged = r;
+                        adjustNode = parent(childChanged);
                     }
-
                 }
             }
+            else// right
+            {
+                //                  std::cout << "delete right " << std::endl;
+
+                rh = height(childChanged);
+                lh = height(left(adjustNode));
+
+                //                  std::cout << "< " << lh << ", " << rh << ">" << std::endl;
+
+                if (rh + 1 == lh) return;// old rh = old lh
+                else if (rh == lh)// old lh < old rh
+                {
+                    --(adjustNode->h);
+                    childChanged = adjustNode;
+                    adjustNode = parent(adjustNode);
+
+                }
+                else//(rh + 1 < lh) old lh > old rh
+                {
+                    link_t l = left(adjustNode);
+                    link_t ll = left(l);
+                    link_t lr = right(l);
+                    if (ll == this->head)// (lr != this->head)(ll == this->head)
+                    {
+                        //                         std::cout << "ll == this->head" << std::endl;
+                        bstLeftRotation(l, this->head);
+                        bstRightRotation(adjustNode, this->head);
+
+                        adjustNode->h = adjustNode->h - 2;
+                        --(l->h);
+                        ++(lr->h);
+
+                        childChanged = lr;
+                        adjustNode = parent(childChanged);
+                    }
+                    else // (ll != this->head)(lr unknown)
+                    {
+                        //                         std::cout << "ll != this->head" << std::endl;
+                        bstRightRotation(adjustNode, this->head);
+                        if (lr != this->head)
+                        {
+                            --(adjustNode->h);
+                            ++(l->h);
+
+                        }
+                        else
+                        {
+                            adjustNode->h = adjustNode->h - 2;
+                        }
+                        childChanged = l;
+                        adjustNode = parent(childChanged);
+                    }
+                }
+
+            }
+        }
     }
 protected:
     int factor(link_t pnode)

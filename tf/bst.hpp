@@ -19,7 +19,7 @@ struct bst_base : public countable
     typedef TLinkNode* link_t;
 
 
-/**************************************************************************/
+    /**************************************************************************/
 
     struct iterator
     {
@@ -45,26 +45,26 @@ struct bst_base : public countable
     };
 
 
-/**************************************************************************/
+    /**************************************************************************/
     /*
      *countable:
          size_t cnt;
     */
     link_t head;
     Cmp cmp;
-/**************************************************************************/
+    /**************************************************************************/
 
     bst_base(Cmp cmp_ = std::less<Value>()) :
-                 countable(0),
-                 head(new TLinkNode()),
-                 cmp(cmp_)
+        countable(0),
+        head(new TLinkNode()),
+        cmp(cmp_)
     {}
     ~bst_base()
     {
         if (!empty())   bstDeleteNodeRecusive(root(), head);
         delete head;
     }
-/**************************************************************************/
+    /**************************************************************************/
     link_t leftMost() { return bstLeftMost(root(), head); }
     link_t rightMost() { return bstRightMost(root(), head); }
     void leftRotation(link_t n) { bstLeftRotation(n, head); }
@@ -73,7 +73,7 @@ struct bst_base : public countable
     bool empty() const{ return size() == 0; }
     link_t root() { return parent(head); }
     link_t getNewNodeAsLeaf(const Value& value) { return bstGetNewNodeAsLeaf(value, head); }
- /**************************************************************************/
+    /**************************************************************************/
     void nodeShapRecusive(link_t subtree ,size_t table_cnt = 0)
     {
         std::string delimiter = std::string(table_cnt, '\t');
@@ -94,17 +94,17 @@ struct bst_base : public countable
     {
         if (root == this->head) return "[None]";
         else return
-            (
-            "[" +
-            nodeToStringRecusive(root->l) +
-            " (" +
-            root->valueToString() + // has_value
-            ") " +
-            nodeToStringRecusive(root->r) +
-            "]"
-            );
+                (
+                    "[" +
+                    nodeToStringRecusive(root->l) +
+                    " (" +
+                    root->valueToString() + // has_value
+                    ") " +
+                    nodeToStringRecusive(root->r) +
+                    "]"
+                    );
     }
-/**************************************************************************/
+    /**************************************************************************/
     link_t next(link_t pnode)
     {
         return bstSuccessor(pnode, head);
@@ -123,7 +123,7 @@ struct bst_base : public countable
         if (!empty()) return rightMost();
         else return head;
     }
-/**************************************************************************/
+    /**************************************************************************/
     link_t findInsertPosition(const Value& value)
     {
         return bstFindInsertPosition(root(), head, value, cmp);
@@ -149,18 +149,28 @@ struct bst_base : public countable
         }
         else
         {
-            if (unique && !cmp(value, p->v) && !cmp(p->v, value)) return 0;
-            else// multi set
+            if (unique)
             {
-                link_t newnode = getNewNodeAsLeaf(value);
-                newnode->p = p;
-                if (cmp(value, p->v))
-                    p->l = newnode;
-                else
-                    p->r = newnode;
-                increaseCnt();
-                return newnode;
+                link_t prevNodeOfInsert = p;
+                if (cmp(value, p->v))// insert as left child
+                {
+                    prevNodeOfInsert = prev(p);
+                }
+                if (prevNodeOfInsert != this->head &&
+                        !cmp(value, prevNodeOfInsert->v) && // value >=
+                        !cmp(prevNodeOfInsert->v, value)      //
+                        )
+                    return 0;
             }
+            link_t newnode = getNewNodeAsLeaf(value);
+            newnode->p = p;
+            if (cmp(value, p->v))
+                p->l = newnode;
+            else
+                p->r = newnode;
+            increaseCnt();
+            return newnode;
+
         }
     }
     void deleteOneNode(link_t del)
@@ -183,7 +193,7 @@ struct bst_base : public countable
 
         delete d;
     }
-/**************************************************************************/
+    /**************************************************************************/
     iterator begin() { return iterator(leftMost(), head); }
     iterator end() { return iterator(head, head); }
 };

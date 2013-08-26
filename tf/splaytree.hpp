@@ -45,9 +45,20 @@ public:
         }
         else
         {
-            if (unique && !cmp(value, p->v) && !cmp(p->v, value)) return 0;
-            else// multi set
+            if (unique)
             {
+                link_t prevNodeOfInsert = p;
+                if (cmp(value, p->v))// insert as left child
+                {
+                    prevNodeOfInsert = prev(p);
+                }
+                if (prevNodeOfInsert != this->head &&
+                        !cmp(value, prevNodeOfInsert->v) && // value >=
+                        !cmp(prevNodeOfInsert->v, value)      //
+                        )
+                    return 0;
+            }
+
                 link_t newnode = getNewNodeAsLeaf(value);
                 newnode->p = p;
                 if (cmp(value, p->v))
@@ -57,7 +68,7 @@ public:
                this->increaseCnt();
                 insertAdjust(newnode);
                 return newnode;
-            }
+
         }
     }
     void splay(link_t pnode)
