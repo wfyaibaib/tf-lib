@@ -5,7 +5,8 @@
 #include "bst.hpp"
 #include "range.hpp"
 #include "aatree.hpp"
-#include "binomial_heap.hpp"
+//#include "binomial_heap.hpp"
+#include "fibonacci_heap.hpp"
 
 #include <iterator>
 #include <algorithm>
@@ -38,30 +39,48 @@ int main()
 //    tf::xrange<int> e;
 
 
-    tf::binomial_heap<int> tree;
-    tf::binomial_heap<int> tree1;
-	auto l = tree.head;
-    for (int i = 0; i < 10; ++i)
+    //tf::binomial_heap<int> tree;
+    tf::fibonacci_heap<int> tree;
+    tf::fibonacci_heap<int> tree1;
+//	auto l = tree.head;
+	std::vector<tf::fibonacci_heap<int>::link_t> vec;
+    for (int i = 0; i < 5; ++i)
     {
-		tree.insertOneNode(i);
+		auto link = tree.insertOneNode(i);
 		tree1.insertOneNode(i);
+		vec.push_back(link);
+		tree.display();	
     }
     std::cout << "======================" << std::endl;
-    //tree.treeShap();
-    //tree1.treeShap();
+	tree.consolidate();
+    tree.display();	
+	tree.decreaseKey(vec[2], -1);
+	tree.display();
+	tree.decreaseKey(vec[1], -2);
+	tree.display();
 
-    std::cout << "========+++++++++++++++++++++++++++++==========" << std::endl;
-    tree.treeShap();
-    std::cout << "========+++++++++++++++++++++++++++++==========" << std::endl;
-
-    
-	//tree.extractMinimum();
 	tree.mergeWithAnother(tree1);
-    std::cout << "========+++++++++++++++++++++++++++++==========" << std::endl;
-    tree.treeShap();
-    std::cout << "========+++++++++++++++++++++++++++++==========" << std::endl;
-    tree1.treeShap();
+    std::cout << "======================" << std::endl;
+	tree.display();
+	tree1.display();
+	tree.consolidate();
+	tree.display();
+    
+
+//	while (tree.cnt)
+//	{
+//		tree.extractMinimum();
+//		tree.display();
+//	}
+    
     std::cin.get();
+	//tree.extractMinimum();
+	////tree.mergeWithAnother(tree1);
+  //  std::cout << "========+++++++++++++++++++++++++++++==========" << std::endl;
+  //  tree.treeShap();
+  //  std::cout << "========+++++++++++++++++++++++++++++==========" << std::endl;
+  //  tree1.treeShap();
+  //  std::cin.get();
 //    auto inserter = tf::bst_multi_inserter_iterator(tree);
 //    std::cout << typeid(*inserter).name() << std::endl;
 //    std::copy(r, e, inserter);

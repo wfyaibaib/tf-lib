@@ -278,6 +278,16 @@ namespace tf {
         return;
     }
     /**************************************************************************/
+    template <class Node>
+    struct flink : public tlink<Node>
+    {
+        Node *d;
+        flink() : d(0){}
+    };
+    // right
+    template <class FLinkNode>
+    FLinkNode* down(FLinkNode* p) {return p->d;}
+    /**************************************************************************/
 
 
 
