@@ -2,6 +2,7 @@
 #define DISJOINT_SET_H
 
 #include "node.hpp"
+#include <hash_map>
 namespace tf {
 template <class Value>
 class disjoint_set_node : public slink<disjoint_set_node<Value> >
@@ -17,6 +18,8 @@ class disjoint_set
 {
 public:
     typedef Value* obj_link_t;
+	
+    
     
     disjoint_set()
 	{}
